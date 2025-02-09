@@ -3,6 +3,11 @@
   justify-self: center;
   display: flex;
 }
+.register-alert {
+  margin-top: 16px;
+  max-width: 500px;
+  justify-self: center;
+}
 .login-input {
   justify-self: center;
   max-width: 300px;

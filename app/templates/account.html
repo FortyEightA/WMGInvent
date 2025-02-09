@@ -1,12 +1,39 @@
-{% extends 'base.html' %} {% block content %}
-<h1>Account</h1>
+{% extends 'base.html' %} 
+{% block title %} <title> Account </title> {% endblock %}
+{% block styles %}
+  <link rel="stylesheet" type = "text/css" href="{{ url_for('.static', filename='account.css') }}" />
+{% endblock %}
+{% block content %}
+  {% with messages = get_flashed_messages() %}
+    {% if messages%}
+    <ul class = "un-2rem">
+      {% for message in messages %}
+        {% if message == "User deleted successfully" %} 
+          <div class="alert alert-danger alert-dismissible fade show account-alert" role="alert">
+            <strong>Warning!</strong> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% else %}
+          <div class="alert alert-success alert-dismissible fade show account-alert" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </ul>
+    {% endif %}
+  {% endwith %}
 {% if session['username'] %}
-<p>Welcome, {{ session['username'] }}</p>
-<button class="btn btn-light" onclick="window.location.href='/logout'">
+<h1 class = "account-text">Welcome, {{ session['username'] }}</h1>
+<button class="btn btn-light account-button" onclick="window.location.href='/logout'">
   Log Out
 </button>
+<div class = "create-account-container">
+<a href = "/delete" class= "delete-account-text">Delete Account</a>
+</div>
 {% else %}
-<button class="btn btn-light" onclick="window.location.href='/login'">
+<h1 class = "account-text">You are not logged in</h1>
+<button class="btn btn-light account-button" onclick="window.location.href='/login'">
   Log In
 </button>
-{% endif %} {% if session['username'] %} {% endif %} {% endblock %}
+{% endif %}{% endblock %}

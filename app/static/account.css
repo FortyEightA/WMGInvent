@@ -1,0 +1,23 @@
+.delete-account-text {
+  justify-self: center;
+  display: flex;
+  font-size: 11px;
+  justify-content: center;
+  margin-top: 10px;
+}
+.account-text {
+  justify-self: center;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+.account-alert {
+  margin-top: 16px;
+  max-width: 500px;
+  justify-self: center;
+}
+.account-button {
+  justify-content: center;
+  justify-self: center;
+  display: flex;
+}

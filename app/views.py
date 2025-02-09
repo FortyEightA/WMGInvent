@@ -25,6 +25,7 @@ def account():
 @views.route('/logout')
 def logout():
     session.pop('username', None)
+    flash('Logged out successfully')
     return redirect(url_for('views.account'))
 
 
@@ -44,9 +45,29 @@ def register():
             conn.commit()
             cursor.close()
             conn.close()
+            flash('User registered successfully')
             return redirect(url_for('views.login'))
     else:
         return render_template('register.html')
+
+
+@views.route('/delete')
+def delete():
+    username = session['username']
+    password = session['password']
+    session.pop('username', None)
+    session.pop('password', None)
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE username=? AND password=?",
+                   (username, password)).fetchone()
+    cursor.execute(
+        "DELETE FROM users WHERE username=? AND password=?", (username, password))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    flash('User deleted successfully')
+    return redirect(url_for('views.account'))
 
 
 @views.route('/login', methods=["POST", "GET"])
@@ -54,12 +75,14 @@ def login():
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
-        session['username'] = username
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
         if cursor.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password)).fetchone():
+            session['username'] = username
+            session['password'] = password
             cursor.close()
             conn.close()
+            flash('Logged in successfully')
             return redirect(url_for('views.account'))
         else:
             flash('Invalid username or password')

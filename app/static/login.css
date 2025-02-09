@@ -3,6 +3,10 @@
   justify-self: center;
   display: flex;
 }
+.login-alert {
+  max-width: 500px;
+  justify-self: center;
+}
 .login-input {
   justify-self: center;
   max-width: 300px;
