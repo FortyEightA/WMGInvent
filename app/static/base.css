@@ -1,3 +1,37 @@
 .un-2rem {
   padding-left: 0rem;
 }
+.general-button {
+  justify-content: center;
+  justify-self: center;
+  display: flex;
+}
+.general-alert {
+  margin-top: 16px;
+  max-width: 500px;
+  justify-self: center;
+}
+.general-input {
+  justify-self: center;
+  max-width: 300px;
+  min-width: 200px;
+}
+.general-button-container {
+  justify-self: center;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+.general-text {
+  justify-self: center;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+.general-small-text {
+  justify-self: center;
+  display: flex;
+  font-size: 11px;
+  justify-content: center;
+  margin-top: 10px;
+}

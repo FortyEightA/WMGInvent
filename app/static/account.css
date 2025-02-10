@@ -20,4 +20,11 @@
   justify-content: center;
   justify-self: center;
   display: flex;
+  margin: 10px;
+}
+.account-button-container {
+  justify-self: center;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
 }

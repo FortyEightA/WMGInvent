@@ -1,0 +1,80 @@
+{% extends 'base.html' %} {% block title %} <title>Update Account</title> {%
+endblock %} {% block styles %}
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="{{ url_for('.static', filename='update.css') }}"
+/>
+{% endblock %} {% block content %} {% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul class="un-2rem">
+  {% for message in messages %} {% if message == "User updated successfully" %}
+  <div
+    class="alert alert-success alert-dismissible fade show general-alert"
+    role="alert"
+  >
+    <strong>Success!</strong> {{ message }}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+  {% else %}
+  <div
+    class="alert alert-warning alert-dismissible fade show general-alert"
+    role="alert"
+  >
+    <strong>Warning!</strong> {{ message }}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+  {% endif %} {% endfor %}
+</ul>
+{% endif %} {% endwith %} {% if session['username'] %}
+<h1 class="general-text">Update Account</h1>
+<form action="#" method="post">
+  <div class="general-input w-50 align-self-center input-group mb-3">
+    <span class="input-group-text" id="basic-addon1">Username</span>
+    <input
+      type="text"
+      class="form-control"
+      name="new_username"
+      required
+      placeholder="Username"
+      aria-label="Username"
+      aria-describedby="basic-addon1"
+    />
+  </div>
+  <div class="general-input w-50 input-group mb-3">
+    <span class="input-group-text" id="basic-addon1">Password</span>
+    <input
+      type="password"
+      class="form-control"
+      name="new_password"
+      required
+      placeholder="Password"
+      aria-label="Password"
+      aria-describedby="basic-addon1"
+    />
+  </div>
+  <div class="general-button-container input-group">
+    <button class="btn btn-light login-button" type="submit">
+      Update Account
+    </button>
+  </div>
+</form>
+{% else %}
+<h1 class="general-text">You are not logged in</h1>
+<button
+  class="btn btn-light general-button"
+  onclick="window.location.href='/login'"
+>
+  Log In
+</button>
+{% endif %}{% endblock %}
