@@ -1,0 +1,85 @@
+{% extends 'base.html' %} {% block title %} <title>Fleet</title> {% endblock %}
+{% block styles %}
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="{{ url_for('.static', filename='fleet.css') }}"
+/>
+{% endblock %} {% block content %} {% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul class="un-2rem">
+  {% for message in messages %}
+    {% if message == "Car added successfully" %}
+      <div
+        class="alert alert-success alert-dismissible fade show general-alert"
+        role="alert" >
+        <strong>Success!</strong> {{ message }}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+    {% else %}
+      <div class="alert alert-warning alert-dismissible fade show general-alert" role="alert">
+    <strong>Warning!</strong> {{ message }}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+    {% endif %}
+  {% endfor %}
+</ul>
+{% endif %} {% endwith %} {% if session['username'] %}
+<h1 class="general-text">Fleet</h1>
+<div id = "card-container" class = "row row-cols-1 row-cols-md-3 g-4" style="justify-content: center;">
+  <div class="card card-fleet-container" style="width: 15rem">
+    <a href="/fleet/add" class="card-fleet-image">
+      <img
+        src="{{ url_for('.static', filename='/assets/images/add_item.jpg') }}"
+        class="card-img-top card-fleet-image"
+      />
+    </a>
+    <div class="card-body">
+      <h5 class="card-title">Card title</h5>
+      <p class="card-text">
+      Press here to add a new car
+      </p>
+      <a href="#" class="btn btn-primary">Add a car</a>
+    </div>
+  </div>
+  {% for car in cars %}
+  <div class="card card-fleet-container" style="width: 15rem">
+    <img
+        src="{{ url_for('.static', filename='/assets/images/' + car[6]) }}"
+      class="card-fleet-image card-img-top"
+    />
+    <div class="card-body">
+      <h5 class="card-title">{{ car[1] }} {{car[2]}}</h5>
+      <p class="card-text">
+        Year: {{ car[3] }}
+      </p>
+      <p class="card-text">
+        Registration: {{car[4]}}
+      </p>
+      <a href="#" class="btn btn-primary">Go somewhere</a>
+    </div>
+  </div>
+  {% endfor %}
+</div
+
+
+  {% else %}
+  <h1 class="general-text">You are not logged in</h1>
+  <button
+    class="btn btn-light general-button"
+    onclick="window.location.href='/login'"
+  >
+    Log In
+  </button>
+  {% endif %} {% endblock %}
+</div>

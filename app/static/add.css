@@ -1,0 +1,11 @@
+.add-input-container {
+  justify-self: center;
+  display: inline-block;
+  vertical-align: middle;
+  align-self: middle;
+  margin-top: 10px;
+  width: 70%;
+}
+.add-input {
+  justify-self: center;
+}

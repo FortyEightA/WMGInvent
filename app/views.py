@@ -3,12 +3,13 @@ import sqlite3
 views = Blueprint('views', __name__, static_folder='app/static',
                   template_folder='templates')
 db_path = '/Users/ignacyniznik/Documents/Uni/WM278/WMGInvent/WMGInvent.db'
+image_path = '/Users/ignacyniznik/Documents/Uni/WM278/WMGInvent/app/static/assets/images'
 conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
 cursor.execute(
-    "CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, username TEXT, password TEXT)")
+    "CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, username TEXT, password TEXT, admin INTEGER)")
 cursor.execute(
-    "CREATE TABLE IF NOT EXISTS cars(id INTEGER PRIMARY KEY, make TEXT, model TEXT, year INTEGER, registration TEXT, status TEXT)"
+    "CREATE TABLE IF NOT EXISTS cars(id INTEGER PRIMARY KEY, make TEXT, model TEXT, year INTEGER, registration TEXT, status TEXT, path_to_image TEXT)"
 )
 cursor.execute(
     "Create table if not exists changes(id INTEGER PRIMARY KEY, car_id INTEGER, change TEXT, date TEXT)"
@@ -21,6 +22,44 @@ conn.close()
 @views.route('/home')
 def home():
     return render_template('home.html')
+
+
+@views.route('/fleet')
+def fleet():
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cars = cursor.execute("SELECT * FROM cars").fetchall()
+    cursor.close()
+    conn.close()
+    print(cars)
+    return render_template('fleet.html', cars=cars)
+
+
+@views.route('/fleet/add', methods=["POST", "GET"])
+def add_car():
+    if request.method == "POST":
+        make = request.form['make']
+        model = request.form['model']
+        year = request.form['year']
+        registration = request.form['registration']
+        image = request.files['image']
+        if image:
+            image_type = str(image.filename).split('.')[-1]
+            image.save(f'{image_path}/{registration}.{image_type}')
+            path_to_image = f'{registration}.{image_type}'
+        else:
+            path_to_image = None
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO cars(make, model, year, registration, path_to_image) VALUES(?, ?, ?, ?, ?)", (make, model, year, registration, path_to_image))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        flash('Car added successfully')
+        return redirect(url_for('views.fleet'))
+    else:
+        return render_template('add.html')
 
 
 @views.route('/account')

@@ -1,0 +1,93 @@
+{% extends 'base.html' %} {% block title %} <title>Add Item</title> {% endblock
+%} {% block styles %}
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="{{ url_for('.static', filename='add.css') }}"
+/>
+{% endblock %} {% block content %} {% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul class="un-2rem">
+  {% for message in messages %}
+  <div
+    class="alert alert-warning alert-dismissible fade show general-alert"
+    role="alert"
+  >
+    <strong>Warning!</strong> {{ message }}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+  {% endfor %}
+</ul>
+{% endif %} {% endwith %} {% if session['username'] %}
+<h1 class="general-text">Add Item</h1>
+<form action="#" method="post" enctype="multipart/form-data">
+  <div class="w-50 add-input align-self-center input-group mb-3">
+    <span class="input-group-text" id="basic-addon1">Make</span>
+    <input
+      type="text"
+      class="form-control"
+      name="make"
+      required
+      placeholder="Make e.g. Vauxhall"
+      aria-label="Item Name"
+      aria-describedby="basic-addon1"
+    />
+  </div>
+  <div class="w-50 align-self-center add-input input-group mb-3">
+    <span class="input-group-text" id="basic-addon1">Model</span>
+    <input
+      type="text"
+      class="form-control"
+      name="model"
+      required
+      placeholder="Model e.g. Astra"
+      aria-label="Item Name"
+      aria-describedby="basic-addon1"
+    />
+  </div>
+  <div class="w-50 align-self-center add-input input-group mb-3">
+    <span class="input-group-text" id="basic-addon1">Year</span>
+    <input
+      type="number"
+      class="form-control"
+      name="year"
+      required
+      placeholder="Year e.g. 2020"
+      aria-label="Item Name"
+      aria-describedby="basic-addon1"
+    />
+  </div>
+  <div class="w-50 align-self-center add-input input-group mb-3">
+    <span class="input-group-text" id="basic-addon1">Registration</span>
+    <input
+      type="text"
+      class="form-control"
+      name="registration"
+      required
+      placeholder="Vehicle Registration e.g. KY72 DFP"
+      aria-label="Item Name"
+      aria-describedby="basic-addon1"
+    />
+  </div>
+  <div class="w-50 align-self-center add-input input-group mb-3">
+    <span class="input-group-text" id="basic-addon1">Image</span>
+    <input class="form-control" required type="file" name="image" accept=".jpg, .png" id="formFile">
+  </div>
+  <div class="general-button-container">
+    <button class="btn btn-light general-button" type="submit">Add Item</button>
+  </div>
+</form>
+{% else %}
+<h1 class="general-text">You are not logged in</h1>
+<button
+  class="btn btn-light general-button"
+  onclick="window.location.href='/login'"
+>
+  Log In
+</button>
+{% endif %} {% endblock %}
