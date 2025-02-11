@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 import sqlite3
+import os
 views = Blueprint('views', __name__, static_folder='app/static',
                   template_folder='templates')
 db_path = '/Users/ignacyniznik/Documents/Uni/WM278/WMGInvent/WMGInvent.db'
@@ -12,8 +13,7 @@ cursor.execute(
     "CREATE TABLE IF NOT EXISTS cars(id INTEGER PRIMARY KEY, make TEXT, model TEXT, year INTEGER, registration TEXT, status TEXT, path_to_image TEXT)"
 )
 cursor.execute(
-    "Create table if not exists changes(id INTEGER PRIMARY KEY, car_id INTEGER, change TEXT, date TEXT)"
-)
+    "Create table if not exists changes(id INTEGER PRIMARY KEY, car_id INTEGER, change TEXT, date TEXT, user_id INTEGER)")
 cursor.close()
 conn.close()
 
@@ -33,6 +33,75 @@ def fleet():
     conn.close()
     print(cars)
     return render_template('fleet.html', cars=cars)
+
+
+@views.route('/fleet/<int:id>', methods=["POST", "GET"])
+def car(id):
+    if request.method == "POST":
+        if request.args.get("f") == "f1":
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+            if request.form['make']:
+                make = request.form['make']
+                cursor.execute("UPDATE cars SET make=? WHERE id=?", (make, id))
+            if request.form['model']:
+                model = request.form['model']
+                cursor.execute(
+                    "UPDATE cars SET model=? WHERE id=?", (model, id))
+            if request.form['year']:
+                year = request.form['year']
+                cursor.execute("UPDATE cars SET year=? WHERE id=?", (year, id))
+            if request.form['registration']:
+                registration = request.form['registration']
+                cursor.execute(
+                    "UPDATE cars SET registration=? WHERE id=?", (registration, id))
+            else:
+                registration = cursor.execute(
+                    "SELECT registration FROM cars WHERE id=?", (id,)).fetchone()[0]
+
+            image = request.files['image']
+            if request.form['make'] or request.form['model'] or request.form['year'] or request.form['registration']:
+                old_image = cursor.execute(
+                    "SELECT path_to_image FROM cars WHERE id=?", (id,)).fetchone()
+                if old_image:
+                    os.rename(
+                        f'{image_path}/{old_image[0]}', f'{image_path}/{registration}.{str(image.filename).split(".")[-1]}')
+                    path_to_image = f'{registration}.{str(image.filename).split(".")[-1]}'
+                    cursor.execute(
+                        "UPDATE cars SET path_to_image=? WHERE id=?", (path_to_image, id))
+                else:
+                    image_type = str(image.filename).split('.')[-1]
+                    image.save(f'{image_path}/{registration}.{image_type}')
+                    path_to_image = f'{registration}.{image_type}'
+            conn.commit()
+            cursor.close()
+            conn.close()
+            flash('Car updated successfully')
+            return redirect(url_for('views.fleet'))
+        elif request.args.get("f") == "f2":
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+            change = request.form['change']
+            date = request.form['date']
+            user_id = cursor.execute(
+                "SELECT id FROM users WHERE username=?", (session['username'],)).fetchone()[0]
+            cursor.execute(
+                "INSERT INTO changes(car_id, change, date, user_id) VALUES(?, ?, ?, ?)", (id, change, date, user_id))
+            conn.commit()
+            cursor.close()
+            conn.close()
+            flash('Change added successfully')
+            return redirect(url_for('views.car', id=id))
+        else:
+            flash('Invalid request')
+            return redirect(url_for('views.fleet'))
+    else:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        car = cursor.execute("SELECT * FROM cars WHERE id=?", (id,)).fetchone()
+        cursor.close()
+        conn.close()
+        return render_template('car.html', car=car)
 
 
 @views.route('/fleet/add', methods=["POST", "GET"])

@@ -2,13 +2,23 @@
   padding: 0px;
   margin: 20px;
 }
+.card-container {
+  margin-top: 5px;
+}
 .card-fleet-image {
-  max-height: 300px;
+  max-height: 200px;
   min-height: 200px;
-  max-width: 300px;
-  min-width: 200px;
+  max-width: auto;
+  min-width: auto;
   align-self: center;
   justify-self: center;
   justify-content: center;
+  object-fit: scale-down;
   display: flex;
+}
+.add-car-button {
+  justify-content: center;
+  justify-self: center;
+  display: flex;
+  object-fit: cover;
 }

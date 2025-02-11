@@ -1,0 +1,195 @@
+{% extends 'base.html' %} {% block title %} <title>{{car[3]}} {{ car[1]}} {{ car[2]}}</title> {% endblock %} {%
+block styles %}
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="{{ url_for('.static', filename='car.css') }}"
+/>
+{% endblock %} {% block content %} {% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul class="un-2rem">
+  {% for message in messages %} {% if message == "Change added successfully" %}
+  <div
+    class="alert alert-success alert-dismissible fade show general-alert"
+    role="alert"
+  >
+    <strong>Success!</strong> {{ message }}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+  {% else %}
+  <div
+    class="alert alert-warning alert-dismissible fade show general-alert"
+    role="alert"
+  >
+    <strong>Warning!</strong> {{ message }}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+  {% endif %} {% endfor %}
+</ul>
+{% endif %} {% endwith %} {% if session['username'] %}
+<div class="container">
+  <div class = "row">
+    <div class="card col-md-8 card-fleet-container">
+      <img
+        src="{{ url_for('.static', filename='/assets/images/' + car[6]) }}"
+        class="card-fleet-image card-img-top"
+      />
+      <div class="card-body">
+        <h5 class="card-title">{{ car[1] }} {{car[2]}}</h5>
+        <p class="card-text">{{ car[3] }}</p>
+        <p class="card-text">{{ car[4] }}</p>
+      </div>
+    </div>
+    <div class="card col-md-4 card-fleet-container">
+      <div class="tab-content">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link active"
+              id="home-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#home"
+              type="button"
+              role="tab"
+              aria-controls="home"
+              aria-selected="true"
+            >
+              Log a change
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="profile-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#update"
+              type="button"
+              role="tab"
+              aria-controls="profile"
+              aria-selected="false"
+            >
+              Update details
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="profile-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#profile"
+              type="button"
+              role="tab"
+              aria-controls="profile"
+              aria-selected="false"
+            >
+              Delete
+            </button>
+          </li>
+        </ul>
+        <div style="margin: 10px;">
+          <div class="tab-content" id="myTabContent">
+            <div
+              class="tab-pane fade show"
+              id="update"
+              role="tabpanel"
+              aria-labelledby="home-tab">
+              <form action="/fleet/{{car[0]}}?f=f1" method="post" enctype="multipart/form-data">
+                <div class="add-input align-self-center input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1">Make</span>
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="make"
+                    placeholder="Make e.g. Vauxhall"
+                    aria-label="Item Name"
+                    aria-describedby="basic-addon1"
+                  />
+                </div>
+                <div class=" align-self-center add-input input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1">Model</span>
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="model"
+                    placeholder="Model e.g. Astra"
+                    aria-label="Item Name"
+                    aria-describedby="basic-addon1"
+                  />
+                </div>
+                <div class=" align-self-center add-input input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1">Year</span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    name="year"
+                    placeholder="Year e.g. 2020"
+                    aria-label="Item Name"
+                    aria-describedby="basic-addon1"
+                  />
+                </div>
+                <div class=" align-self-center add-input input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1">Registration</span>
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="registration"
+                    placeholder="Vehicle Registration e.g. KY72 DFP"
+                    aria-label="Item Name"
+                    aria-describedby="basic-addon1"
+                  />
+                </div>
+                <div class=" align-self-center add-input input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1">Image</span>
+                  <input class="form-control" type="file" name="image" accept=".jpg, .png" id="formFile">
+                </div>
+                <div class="general-button-container">
+                  <button class="btn btn-light general-button" type="submit">Update</button>
+                </div>
+              </form>
+            </div>
+            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+              <form action="/fleet/{{car[0]}}?f=f2" method="post">
+                <div class="add-input align-self-center input-group mb-3">
+                  <label class="input-group-text" for="inputGroupSelect01">Options</label>
+                  <select class="form-select" name = "change" id="inputGroupSelect01">
+                    <option selected>Choose a status change</option>
+                    <option value="Available">Available</option>
+                    <option value="In Use">In Use</option>
+                    <option value="Maintenance">Maintenance</option>
+                    <option value="Other">Other</option>
+                </select>
+                </div>
+                <div class="align-self-center add-input input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1">Date</span>
+                  <input
+                    type="date"
+                    class="form-control"
+                    name="date"
+                    required
+                    placeholder="Date e.g. 2021-01-01"
+                    aria-label="Item Name"
+                    aria-describedby="basic-addon1">
+                </div>
+                <div class="general-button-container">
+                  <button class="btn btn-light general-button" type="submit">Log Change</button>
+                </div>
+              </form>
+            </div
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endif %} {% endblock %}

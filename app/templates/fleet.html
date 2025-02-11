@@ -36,28 +36,31 @@
 </ul>
 {% endif %} {% endwith %} {% if session['username'] %}
 <h1 class="general-text">Fleet</h1>
-<div id = "card-container" class = "row row-cols-1 row-cols-md-3 g-4" style="justify-content: center;">
-  <div class="card card-fleet-container" style="width: 15rem">
+<div id = "card-container" class = "card-container row row-cols-1 row-cols-md-3 g-4" style="justify-content: center;">
+  <div class="card card-fleet-container" style="width: 14rem">
     <a href="/fleet/add" class="card-fleet-image">
       <img
         src="{{ url_for('.static', filename='/assets/images/add_item.jpg') }}"
-        class="card-img-top card-fleet-image"
+        class="card-img-top add-car-button"
       />
     </a>
     <div class="card-body">
       <h5 class="card-title">Card title</h5>
       <p class="card-text">
-      Press here to add a new car
+      Add a new car
       </p>
+      <p class="card-text">To the Fleet</p>
       <a href="#" class="btn btn-primary">Add a car</a>
     </div>
   </div>
   {% for car in cars %}
-  <div class="card card-fleet-container" style="width: 15rem">
+  <div class="card card-fleet-container" style="width: 14rem">
+    <a href="/fleet/{{car[0]}}" class="card-fleet">
     <img
         src="{{ url_for('.static', filename='/assets/images/' + car[6]) }}"
       class="card-fleet-image card-img-top"
     />
+    </a>
     <div class="card-body">
       <h5 class="card-title">{{ car[1] }} {{car[2]}}</h5>
       <p class="card-text">
@@ -66,7 +69,7 @@
       <p class="card-text">
         Registration: {{car[4]}}
       </p>
-      <a href="#" class="btn btn-primary">Go somewhere</a>
+      <a href="/fleet/{{car[0]}}" class="btn btn-primary">View car</a>
     </div>
   </div>
   {% endfor %}
