@@ -24,15 +24,19 @@
     {% endif %}
   {% endwith %}
 {% if session['username'] %}
-<h1 class = "account-text">Welcome, {{ session['username'] }}</h1>
+<h1 class = "general-text">Welcome {{ session['username'] }}</h1>
 <div class = "account-button-container">
   <button class="btn btn-light account-button" onclick="window.location.href='/update'">
     Update Account
   <button class="btn btn-light account-button" onclick="window.location.href='/logout'">
     Log Out
   </button>
+
 </div>
 <a href = "/delete" class= "delete-account-text">Delete Account</a>
+  {% if session['admin'] == 1 %}
+    <p class= "delete-account-text">You have an admin account</p>
+  {% endif %}
 {% else %}
 <h1 class = "account-text">You are not logged in</h1>
 <button class="btn btn-light account-button" onclick="window.location.href='/login'">

@@ -37,8 +37,9 @@
 {% endif %} {% endwith %} {% if session['username'] %}
 <h1 class="general-text">Fleet</h1>
 <div id = "card-container" class = "card-container row row-cols-1 row-cols-md-3 g-4" style="justify-content: center;">
+  {% if session['admin'] == 1%}
   <div class="card card-fleet-container" style="width: 14rem">
-    <a href="/fleet/add" class="card-fleet-image">
+    <a href="/fleet/add" class="card-fleet-image" >
       <img
         src="{{ url_for('.static', filename='/assets/images/add_item.jpg') }}"
         class="card-img-top add-car-button"
@@ -53,13 +54,14 @@
       <a href="#" class="btn btn-primary">Add a car</a>
     </div>
   </div>
+  {% endif %}
   {% for car in cars %}
   <div class="card card-fleet-container" style="width: 14rem">
     <a href="/fleet/{{car[0]}}" class="card-fleet">
-    <img
-        src="{{ url_for('.static', filename='/assets/images/' + car[6]) }}"
-      class="card-fleet-image card-img-top"
-    />
+      <img
+          src="{{ url_for('.static', filename='/assets/images/' + car[6]) }}"
+        class="card-fleet-image card-img-top"
+      />
     </a>
     <div class="card-body">
       <h5 class="card-title">{{ car[1] }} {{car[2]}}</h5>

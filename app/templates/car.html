@@ -5,6 +5,7 @@ block styles %}
   type="text/css"
   href="{{ url_for('.static', filename='car.css') }}"
 />
+
 {% endblock %} {% block content %} {% with messages = get_flashed_messages() %}
 {% if messages %}
 <ul class="un-2rem">
@@ -39,6 +40,7 @@ block styles %}
 {% endif %} {% endwith %} {% if session['username'] %}
 <div class="container">
   <div class = "row">
+  {% if session['admin'] %}
     <div class="card col-md-8 card-fleet-container">
       <img
         src="{{ url_for('.static', filename='/assets/images/' + car[6]) }}"
@@ -50,6 +52,20 @@ block styles %}
         <p class="card-text">{{ car[4] }}</p>
       </div>
     </div>
+  {% else %}
+    <div class="card col-md-12 card-fleet-container">
+      <img
+        src="{{ url_for('.static', filename='/assets/images/' + car[6]) }}"
+        class="card-fleet-image card-img-top"
+      />
+      <div class="card-body">
+        <h5 class="card-title">{{ car[1] }} {{car[2]}}</h5>
+        <p class="card-text">{{ car[3] }}</p>
+        <p class="card-text">{{ car[4] }}</p>
+      </div>
+    </div>
+  {% endif %}
+  {% if session['admin'] %}
     <div class="card col-md-4 card-fleet-container">
       <div class="tab-content">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -58,7 +74,7 @@ block styles %}
               class="nav-link active"
               id="home-tab"
               data-bs-toggle="tab"
-              data-bs-target="#home"
+              data-bs-target="#log"
               type="button"
               role="tab"
               aria-controls="home"
@@ -86,7 +102,7 @@ block styles %}
               class="nav-link"
               id="profile-tab"
               data-bs-toggle="tab"
-              data-bs-target="#profile"
+              data-bs-target="#delete"
               type="button"
               role="tab"
               aria-controls="profile"
@@ -157,7 +173,14 @@ block styles %}
                 </div>
               </form>
             </div>
-            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <div class="tab-pane fade show" id="delete" role="tabpanel" aria-labelledby="home-tab">
+              <form action="/fleet/{{car[0]}}?f=f3" method="post">
+                <div class="general-button-container">
+                  <button class="btn btn-light general-button" type="submit">Delete</button>
+                </div>
+              </form>
+            </div>
+            <div class="tab-pane fade show active" id="log" role="tabpanel" aria-labelledby="home-tab">
               <form action="/fleet/{{car[0]}}?f=f2" method="post">
                 <div class="add-input align-self-center input-group mb-3">
                   <label class="input-group-text" for="inputGroupSelect01">Options</label>
@@ -167,16 +190,23 @@ block styles %}
                     <option value="In Use">In Use</option>
                     <option value="Maintenance">Maintenance</option>
                     <option value="Other">Other</option>
-                </select>
+                  </select>
                 </div>
                 <div class="align-self-center add-input input-group mb-3">
-                  <span class="input-group-text" id="basic-addon1">Date</span>
+                  <span class="input-group-text" id="basic-addon1">Start Date</span>
                   <input
                     type="date"
                     class="form-control"
-                    name="date"
-                    required
-                    placeholder="Date e.g. 2021-01-01"
+                    name="date_start"
+                    placeholder="Date"
+                    aria-label="Item Name"
+                    aria-describedby="basic-addon1">
+                  <span class="input-group-text" id="basic-addon1">End Date</span>
+                  <input
+                    type="date"
+                    class="form-control"
+                    name="date_end"
+                    placeholder="Date"
                     aria-label="Item Name"
                     aria-describedby="basic-addon1">
                 </div>
@@ -184,12 +214,67 @@ block styles %}
                   <button class="btn btn-light general-button" type="submit">Log Change</button>
                 </div>
               </form>
-            </div
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Change</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">End Date</th>
+                    <th scope="col">User</th>
+                    <th scope="col" style="justify-content: center; display: flex; ">Delete</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for each in date_data %}
+                  <tr>
+                    <td>{{ each[0] }}</td>
+                    <td>{{ each[2] }}</td>
+                    <td>{{ each[3] }}</td>
+                    <td>{{ each[4] }}</td>
+                    <td>{{ each[5] }}</td>
+                    <td>
+                      <form action="/fleet/{{car[0]}}?f=f4" method="post">
+                        <input type="hidden" name="change_id" value="{{ each[0] }}" />
+                        <button class="btn btn-light general-button" type="submit">Delete</button>
+                      </form>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
     </div>
-
+  {% endif %}
+  </div>
+  <div class = "row" style= "margin-top: 0px;">
+    <div class="card col-md-16 card-fleet-container">
+      <div class="card-body">
+        <div id="tester">
+          <script>
+          TESTER = document.getElementById('tester');
+          var traces= [
+          {% for each in data %}
+              {
+                x: [{% for date in each[1]%} '{{date}}', {% endfor %}],
+                y: [{% for date in each[1]%} '{{each[0]}}', {% endfor %}],
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: '{{each[0]}}',
+                marker: { color: {% if each[0] == 'Available' %} 'green' {% elif each[0] == 'In Use' %} 'blue' {% elif each[0] == 'Maintenance' %} 'red' {% else %} 'black' {% endif %} },
+                line: { color: {% if each[0] == 'Available' %} 'green' {% elif each[0] == 'In Use' %} 'blue' {% elif each[0] == 'Maintenance' %} 'red' {% else %} 'black' {% endif %} }
+              },
+          {% endfor %}
+            ];
+          var layour = {showlegend: false}
+          Plotly.newPlot('tester', traces, layour);
+          </script>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 {% endif %} {% endblock %}

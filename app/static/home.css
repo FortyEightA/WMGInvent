@@ -1,0 +1,79 @@
+.general-text {
+  text-align: center;
+  margin: 0px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.container {
+  margin-top: 30px;
+}
+.container-top {
+  display: inline-flex;
+  flex-direction: column;
+  align-content: flex-start;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  padding: 30px 50px;
+}
+.card-img-top {
+  max-height: 200px;
+  min-height: 200px;
+  max-width: auto;
+  min-width: auto;
+  align-self: center;
+  justify-self: center;
+  justify-content: center;
+  object-fit: scale-down;
+  display: flex;
+}
+.carousel-control-prev,
+.carousel-control-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  z-index: 10;
+}
+
+.carousel-control-prev {
+  left: -5rem; /* Slightly outside the card row */
+}
+
+.carousel-control-next {
+  right: -5rem; /* Slightly outside the card row */
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: #e0e1dd; /* Change button background color */
+  border-radius: 50%; /* Make it circular */
+  width: 50px;
+  height: 50px;
+}
+
+/* Center the row of cards */
+.carousel-item .row {
+  justify-content: center;
+  position: relative;
+}
+.card-body {
+  background-color: #f8f9fa;
+  border-radius: 5px;
+} /* Style for carousel indicators */
+.carousel-indicators {
+  bottom: -40px; /* Position below card row */
+}
+
+.carousel-indicators button {
+  background-color: #555; /* Darker than default, but lighter than active */
+  width: 30px;
+  height: 6px;
+  border-radius: 4px; /* Slight rounding */
+  margin: 0 5px;
+  border: none;
+}
+
+.carousel-indicators .active {
+  background-color: #222; /* Darkest for active indicator */
+}

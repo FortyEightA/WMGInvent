@@ -1,0 +1,117 @@
+{% extends 'base.html' %} {% block title %} <title>Data</title> {% endblock %}
+{% block styles %}
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="{{ url_for('.static', filename='data.css') }}"
+/>
+{% endblock %} {% block content %}
+<div class="container">
+  <h1 class="general-text">Data</h1>
+  <div class="row row-cols-2 ">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Car Status</h5>
+          <p class="card-text">
+            This graph shows the status of the cars in the fleet at this point in time.
+          </p>
+            <div id="tester">
+            <script>
+              <!--pie chart -->
+              TESTER = document.getElementById('tester');
+              var traces= [
+                {
+                  values: [{{status.get('Available')}}, {{status.get('In Use')}}, {{status.get('Maintenance')}}, {{status.get('Other')}}],
+                  labels: ['Available', 'In Use', 'Mianteinance', 'Other'],
+                  type: 'pie'
+                }
+              ];
+              Plotly.newPlot('tester', traces);
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Users</h5>
+          <p class="card-text">
+            This graph shows the number of users in the system.
+          </p>
+          <div id="usergraph"></div>
+          <script>
+            <!--user Pie chart -->
+            var traces = [
+              {
+                values: [{{users[1]}}, {{users[0]}}],
+                labels: ['Admin', 'User'],
+                type: 'pie'
+              }
+            ];
+            Plotly.newPlot('usergraph', traces);
+          </script>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row row-cols-1 " style = " padding-top: 20px;">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">History</h5>
+          <p class="card-text">
+            This graph shows the history of the all the cars in the fleet.
+          </p>
+          <div id="historygraph"></div>
+          <script>
+            <!--line chart -->
+            var dates = []
+            var available = []
+            var inuse = []
+            var maintenance = []
+            var other = []
+            {% for date in changes %}
+            dates.push('{{date[0]}}')
+            available.push({{date[1]}})
+            inuse.push({{date[2]}})
+            maintenance.push({{date[3]}})
+            other.push({{date[4]}})
+            {% endfor %}
+            history = document.getElementById('historygraph');
+            var traces = [
+              {
+                x: dates,
+                y: available,
+                mode: 'lines',
+                name: 'Available'
+              },
+              {
+                x: dates,
+                y: inuse,
+                mode: 'lines',
+                name: 'In Use'
+              },
+              {
+                x: dates,
+                y: maintenance,
+                mode: 'lines',
+                name: 'Maintenance'
+              },
+              {
+                x: dates,
+                y: other,
+                mode: 'lines',
+                name: 'Other'
+              }
+
+            ]
+            Plotly.newPlot('historygraph', traces);
+          </script>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endblock %}
+</div>
