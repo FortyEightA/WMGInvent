@@ -6,11 +6,15 @@ from datetime import timedelta, datetime
 views = Blueprint('views', __name__, static_folder='app/static',
                   template_folder='templates')
 
-db_path = '/Users/ignacyniznik/Documents/Uni/WM278/WMGInvent/WMGInvent.db'
-image_path = '/Users/ignacyniznik/Documents/Uni/WM278/WMGInvent/app/static/assets/images'
+# path to database and images
+db_path = 'WMGInvent.db'
+image_path = '/app/static/assets/images'
+
+# database table wrapper class, allows for easy interaction with the database
 
 
 class Table:
+    # create table if it doesn't exist
     def __init__(self, name, fields) -> None:
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
@@ -21,6 +25,7 @@ class Table:
         cursor.close()
         conn.close()
 
+    # get data from table with optional where clause and extra clause, fetch all or one
     def get(self, fields, where="", extra="", fetch="all"):
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
@@ -34,6 +39,7 @@ class Table:
         conn.close()
         return data
 
+    # get all data from table
     def get_all(self):
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
@@ -42,6 +48,7 @@ class Table:
         conn.close()
         return data
 
+    # get data by id
     def get_by_id(self, table, id):
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
@@ -51,6 +58,7 @@ class Table:
         conn.close()
         return data
 
+    # execute query with values, for scenarios where query is not predefined
     def execute(self, query, values):
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
@@ -59,6 +67,7 @@ class Table:
         cursor.close()
         conn.close()
 
+    # insert data into table
     def insert(self, columns, values):
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
@@ -68,6 +77,7 @@ class Table:
         cursor.close()
         conn.close()
 
+    # delete data from table with where clause
     def delete(self, where):
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
@@ -76,6 +86,7 @@ class Table:
         cursor.close()
         conn.close()
 
+    # used for left join queries
     def left_join(self, table, on, where="", extra=""):
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
@@ -124,6 +135,8 @@ def get_history():
     largets_date = changes.get('MAX(date_end)', fetch='one')
     data = []
     # loop through dates and set number of cars available, in use, maintenance, other
+    if smallest_date[0] is None or largets_date[0] is None:
+        return data
     start_date = datetime.strptime(smallest_date[0], '%Y-%m-%d')
     end_date = datetime.strptime(largets_date[0], '%Y-%m-%d')
     while start_date <= end_date:
@@ -224,11 +237,6 @@ def car(id):
                     'path_to_image', where=f"WHERE id={id}", fetch='one')
                 old_image = old_image[0] if old_image else None
                 if old_image:
-
-                    # os.remove(
-                    #     image_path +
-                    #     f'/{registration}.{str(old_image).split(".")[-1]}'
-                    # )
                     os.remove(
                         image_path +
                         f'/{old_image}'
@@ -296,7 +304,7 @@ def car(id):
         return render_template('car.html', car=car, data=data, date_data=date_data)
 
 
-@views.route('/fleet/search', methods=["POST", "GET"])
+@views.route('/search', methods=["POST", "GET"])
 def search():
     if request.method == "POST":
 
@@ -407,9 +415,10 @@ def delete():
     session.pop('username', None)
     session.pop('password', None)
     session.pop('admin', None)
+    user_id = users.get(
+        'id', where=f"WHERE username='{username}' AND password='{password}'", fetch='one')[0]
+    changes.delete(f"user_id={user_id}")
     users.delete(f"username='{username}' AND password='{password}'")
-    changes.delete(
-        f"user_id={users.get('id', where=f"WHERE username='{username}'", fetch='one')[0]}")
     flash('User deleted successfully')
     return redirect(url_for('views.account'))
 
