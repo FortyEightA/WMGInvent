@@ -3,6 +3,7 @@ import sqlite3
 import os
 from datetime import timedelta, datetime
 
+# create blueprint for views
 views = Blueprint('views', __name__, static_folder='app/static',
                   template_folder='templates')
 
@@ -10,9 +11,8 @@ views = Blueprint('views', __name__, static_folder='app/static',
 db_path = 'WMGInvent.db'
 image_path = '/app/static/assets/images'
 
+
 # database table wrapper class, allows for easy interaction with the database
-
-
 class Table:
     # create table if it doesn't exist
     def __init__(self, name, fields) -> None:
@@ -97,6 +97,7 @@ class Table:
         return data
 
 
+# create tables
 users = Table('users', ['username TEXT', 'password TEXT', 'admin INTEGER'])
 cars = Table('cars', ['make TEXT', 'model TEXT', 'year INTEGER',
                       'registration TEXT', 'status TEXT', 'path_to_image TEXT'])
@@ -104,6 +105,7 @@ changes = Table('changes', ['car_id INTEGER', 'change TEXT',
                             'date_start TEXT', 'date_end TEXT', 'user_id INTEGER'])
 
 
+# add recent cars to session
 def add_recents(id):
     if 'recents' not in session:
         session['recents'] = []
@@ -115,6 +117,8 @@ def add_recents(id):
         session['recents'] = recents
 
 
+# get dates between start and end date for a car
+# returns a list of dates and the change
 def get_dates_between(id):
     dates = changes.get('date_start, date_end, change',
                         where=f"WHERE car_id={id}", extra="ORDER BY date_start", fetch='all')
@@ -130,11 +134,11 @@ def get_dates_between(id):
     return data
 
 
+# get history of changes for all cars
 def get_history():
     smallest_date = changes.get('MIN(date_start)', fetch='one')
     largets_date = changes.get('MAX(date_end)', fetch='one')
     data = []
-    # loop through dates and set number of cars available, in use, maintenance, other
     if smallest_date[0] is None or largets_date[0] is None:
         return data
     start_date = datetime.strptime(smallest_date[0], '%Y-%m-%d')
@@ -155,15 +159,18 @@ def get_history():
     return data
 
 
+# get data for home page
 def user_data():
     return [users.get('COUNT(*)', where="WHERE admin!=0", fetch='one')[0],
             users.get('COUNT(*)', where="WHERE admin=1", fetch='one')[0]]
 
 
+# get data for home
 def car_data():
     return cars.get('COUNT(*)', fetch='one')[0]
 
 
+# get current status of cars
 def current_status():
     dates = changes.get('date_start, date_end, change, car_id',
                         extra="ORDER BY date_start", fetch='all')
@@ -189,6 +196,9 @@ def current_status():
     return status_count
 
 
+# routes
+
+# home route
 @views.route('/')
 @views.route('/home')
 def home():
@@ -202,15 +212,18 @@ def home():
     return render_template('home.html', cars_data=cars_data, status=current_status_data, changes=full_changes_data)
 
 
+# fleet route
 @views.route('/fleet')
 def fleet():
     car_data = cars.get_all()
     return render_template('fleet.html', cars=car_data)
 
 
+# car route
 @views.route('/fleet/<int:id>', methods=["POST", "GET"])
 def car(id):
     if request.method == "POST":
+        # update car
         if request.args.get("f") == "f1":
             if request.form['make']:
                 make = request.form['make']
@@ -232,9 +245,12 @@ def car(id):
                 registration = cars.get('registration', where=f"WHERE id={id}")
 
             image = request.files['image']
+            # check if image is uploaded
             if request.form['make'] or request.form['model'] or request.form['year'] or request.form['registration'] or image:
+                # check if image exists
                 old_image = cars.get(
                     'path_to_image', where=f"WHERE id={id}", fetch='one')
+                # delete old image
                 old_image = old_image[0] if old_image else None
                 if old_image:
                     os.remove(
@@ -253,6 +269,7 @@ def car(id):
                     path_to_image = f'{registration}.{image_type}'
             flash('Car updated successfully')
             return redirect(url_for('views.fleet'))
+        # add change
         elif request.args.get("f") == "f2":
             change = request.form['change']
             date_start = request.form['date_start']
@@ -262,6 +279,7 @@ def car(id):
             if date_end < date_start:
                 flash('Invalid date range')
                 return redirect(url_for('views.car', id=id))
+            # check if date range overlaps with existing change
             for dates in changes.get('date_start, date_end', where=f"WHERE car_id={id}", fetch='all'):
                 if date_start <= dates[1] and date_end >= dates[0]:
                     flash('Date range overlaps with existing change')
@@ -282,19 +300,23 @@ def car(id):
                 "INSERT INTO changes(car_id, change, date_start, date_end, user_id) VALUES(?, ?, ?, ?, ?)", (id, change, date_start, date_end, user_id[0]))
             flash('Change added successfully')
             return redirect(url_for('views.car', id=id))
+        # delete car
         elif request.args.get("f") == "f3":
             cars.delete(where=f"id={id}")
             changes.delete(where=f"car_id={id}")
             flash('Car deleted successfully')
             return redirect(url_for('views.fleet'))
+        # delete change
         elif request.method == "POST" and request.args.get("f") == "f4":
             change_id = request.form['change_id']
             changes.delete(where=f"id={change_id}")
             flash('Change deleted successfully')
             return redirect(url_for('views.car', id=id))
+        # invalid request
         else:
             flash('Invalid request')
             return redirect(url_for('views.fleet'))
+    # get car data and view car
     else:
         car = cars.get_by_id('cars', id)
         data = get_dates_between(id)
@@ -304,6 +326,7 @@ def car(id):
         return render_template('car.html', car=car, data=data, date_data=date_data)
 
 
+# search route
 @views.route('/search', methods=["POST", "GET"])
 def search():
     if request.method == "POST":
@@ -322,6 +345,7 @@ def search():
         return redirect(url_for('views.home'))
 
 
+# data route
 @views.route('/data')
 def data():
     cars_count = car_data()
@@ -331,6 +355,7 @@ def data():
     return render_template('data.html', cars_count=cars_count, users=users_data, changes=full_changes_data, status=current_status_data)
 
 
+# add car route
 @views.route('/fleet/add', methods=["POST", "GET"])
 def add_car():
     if request.method == "POST":
@@ -353,11 +378,13 @@ def add_car():
         return render_template('add.html')
 
 
+# account route
 @views.route('/account')
 def account():
     return render_template('account.html')
 
 
+# logout route
 @views.route('/logout')
 def logout():
     session.pop('username', None)
@@ -368,6 +395,7 @@ def logout():
     return redirect(url_for('views.account'))
 
 
+# register, update and delete routes
 @views.route('/register', methods=["POST", "GET"])
 def register():
     if request.method == "POST":

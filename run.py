@@ -2,6 +2,7 @@ from flask import Flask
 from app.views import views
 from datetime import timedelta
 
+# Create the Flask app
 app = Flask(__name__, static_folder='app/static',
             template_folder='app/templates')
 app.secret_key = "WMGInvent"
