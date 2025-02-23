@@ -5,7 +5,7 @@ from datetime import timedelta
 app = Flask(__name__, static_folder='app/static',
             template_folder='app/templates')
 app.secret_key = "WMGInvent"
-app.permanent_session_lifetime = timedelta(days=1)
+app.permanent_session_lifetime = timedelta(days=0.5)
 app.register_blueprint(views, url_prefix='')
 
 
