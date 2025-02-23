@@ -68,6 +68,12 @@ instance/
 # Scrapy stuff:
 .scrapy
 
+.gitignore
+.python-version
+.gitattributes
+.DS_Store
+.git/
+.wmgInvent/
 # Sphinx documentation
 docs/_build/
 
