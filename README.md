@@ -2,7 +2,7 @@
 
 This project is a Flask-based web application of the initial implementation of the WMGInvent Fleet Management System, including fleet managment features, user authentication and searching, as well as a data report.
 
-
+The code is also available on github under the link here: https://github.com/FortyEightA/WMGInvent
 ## Features
 
 - Fleet managment

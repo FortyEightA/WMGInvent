@@ -9,7 +9,7 @@ views = Blueprint('views', __name__, static_folder='app/static',
 
 # path to database and images
 db_path = 'WMGInvent.db'
-image_path = '/app/static/assets/images'
+image_path = 'app/static/assets/images'
 
 
 # database table wrapper class, allows for easy interaction with the database
@@ -161,7 +161,7 @@ def get_history():
 
 # get data for home page
 def user_data():
-    return [users.get('COUNT(*)', where="WHERE admin!=0", fetch='one')[0],
+    return [users.get('COUNT(*)', where="WHERE admin IS NULL", fetch='one')[0],
             users.get('COUNT(*)', where="WHERE admin=1", fetch='one')[0]]
 
 
@@ -246,7 +246,7 @@ def car(id):
 
             image = request.files['image']
             # check if image is uploaded
-            if request.form['make'] or request.form['model'] or request.form['year'] or request.form['registration'] or image:
+            if request.files['image']:
                 # check if image exists
                 old_image = cars.get(
                     'path_to_image', where=f"WHERE id={id}", fetch='one')
