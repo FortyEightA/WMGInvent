@@ -161,7 +161,7 @@ def get_history():
 
 # get data for home page
 def user_data():
-    return [users.get('COUNT(*)', where="WHERE admin!=0", fetch='one')[0],
+    return [users.get('COUNT(*)', where="WHERE admin IS NULL", fetch='one')[0],
             users.get('COUNT(*)', where="WHERE admin=1", fetch='one')[0]]
 
 
