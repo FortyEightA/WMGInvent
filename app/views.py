@@ -9,7 +9,7 @@ views = Blueprint('views', __name__, static_folder='app/static',
 
 # path to database and images
 db_path = 'WMGInvent.db'
-image_path = '/app/static/assets/images'
+image_path = 'app/static/assets/images'
 
 
 # database table wrapper class, allows for easy interaction with the database
