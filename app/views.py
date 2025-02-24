@@ -246,7 +246,7 @@ def car(id):
 
             image = request.files['image']
             # check if image is uploaded
-            if request.form['make'] or request.form['model'] or request.form['year'] or request.form['registration'] or image:
+            if request.files['image']:
                 # check if image exists
                 old_image = cars.get(
                     'path_to_image', where=f"WHERE id={id}", fetch='one')
