@@ -1,5 +1,0 @@
-.wmgInvent/
-app/__pycache__/
-.gitignore
-app/__pycache__/*
-.DS_Store
