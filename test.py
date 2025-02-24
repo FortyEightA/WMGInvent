@@ -97,7 +97,7 @@ class FlaskAppTestCase(unittest.TestCase):
         self.client.post(
             '/login', data={'username': 'testuser', 'password': 'testpass'})
         response = self.client.post(
-            '/update', data={'username': 'testuser', 'password': 'testpass'})
+            '/update', data={'new_username': 'testuser', 'new_password': 'testpass'})
         self.assertEqual(response.status_code, 200)
 
     def test_logout(self):
